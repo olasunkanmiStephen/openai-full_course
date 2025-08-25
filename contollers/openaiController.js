@@ -26,4 +26,21 @@ const generateMeta = async (title) => {
     console.log(tags.choices[0].message.content)
 }
 
-module.exports = { generateMeta }
+const generateImage = async (description) => {
+    try {        
+        const image = await openai.images.generate({
+            prompt: description,
+            model: "dall-e-3",
+            size: "1024x1024"
+        });
+        console.log(image.data[0].url)
+    } catch (error) {
+        console.error("Image generation failed:", error.message);
+        if (error.status === 500) {
+            console.log("Retrying...");
+            return generateImage(description)
+        }
+    }
+
+}
+module.exports = { generateMeta, generateImage }

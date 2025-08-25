@@ -1,6 +1,6 @@
 const { title } = require('process');
 const readline = require('readline');
-const { generateMeta } = require('./contollers/openaiController')
+const { generateMeta, generateImage } = require('./contollers/openaiController')
 
 
 
@@ -11,5 +11,5 @@ const rl = readline.createInterface({
 })
 
 
-
+rl.question('Describe your Youtube Thumbnails \n', generateImage)
 rl.question('Youtube Video Title: \n', generateMeta)
