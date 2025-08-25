@@ -1,15 +1,14 @@
-const { title } = require('process');
-const readline = require('readline');
+const express = require('express')
+
+const app = express();
+
 const { generateMeta, generateImage } = require('./contollers/openaiController')
 
+app.listen(4000, () => console.log("listening for requests on port 4000"))
 
 
-
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-})
+app.use(express.json())
 
 
-rl.question('Describe your Youtube Thumbnails \n', generateImage)
-rl.question('Youtube Video Title: \n', generateMeta)
+app.post('/openai/meta', generateMeta)
+app.post('/openai/image', generateImage)

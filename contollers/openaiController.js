@@ -1,6 +1,8 @@
 const openai = require('../config/openaiConfig')
 
-const generateMeta = async (title) => {
+const generateMeta = async (req, res) => {
+    const { title } = req.body;
+
     const description = await openai.chat.completions.create({
         model: "gpt-4.1-nano",
         messages: [
@@ -22,18 +24,23 @@ const generateMeta = async (title) => {
         max_tokens: 100
     })
 
-    console.log(description.choices[0].message.content)
-    console.log(tags.choices[0].message.content)
+    res.status(200).json({
+        description: description.choices[0].message,
+        tags: tags.choices[0].message
+    })
 }
 
-const generateImage = async (description) => {
+const generateImage = async (req, res) => {
     try {        
         const image = await openai.images.generate({
-            prompt: description,
+            prompt: req.body.prompt,
             model: "dall-e-3",
             size: "1024x1024"
         });
         console.log(image.data[0].url)
+        res.status(200).json({
+           url: image.data[0].url
+        })
     } catch (error) {
         console.error("Image generation failed:", error.message);
         if (error.status === 500) {
