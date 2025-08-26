@@ -5,8 +5,9 @@ const webSearchForm = document.querySelector('.web-search form')
 const description = document.querySelector('.description p')
 const tags = document.querySelector('.tags p')
 const thumbnail = document.querySelector('.thumbnail img') 
-const searchHeading = document.querySelector('.Searchresult h3')
-const searchContent = document.querySelector('.Searchresult p')
+const searchResultContainer = document.querySelector('.Searchresult')
+// const searchHeading = document.querySelector('.Searchresult h3')
+// const searchContent = document.querySelector('.Searchresult p')
 
 
 metaForm.addEventListener('submit', async (e) => {
@@ -50,7 +51,21 @@ webSearchForm.addEventListener('submit', async (e) => {
 
   const data =  await res.json()
 
+  const text = data.response.output_text;
 
-  searchHeading.textContent = data.heading || "Search Result"
-  searchContent.textContent = data.content || "No content found."
+  const results = text.split("/n").filter(line => line.trim() !== "")
+
+  searchResultContainer.innerHTML = "";
+
+  if(results.length > 0) {
+    results.forEach(result => {
+      const p = document.createElement('p');
+      p.textContent = result;
+      searchResultContainer.appendChild(p)
+    });
+  } else {
+    const p = document.createElement('p');
+    p.textContent = "No results found.";
+    searchResultContainer.appendChild(p);
+  }
 })

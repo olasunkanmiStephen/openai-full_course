@@ -49,27 +49,23 @@ const generateImage = async (req, res) => {
     }
   }
 };
- 
+
 const webSearch = async (req, res) => {
   try {
     const { query } = req.body;
 
-    const response = await openai.chat.completions.create({
+    const response = await openai.responses.create({
       model: "gpt-4.1",
-      messages: [
-        { role: "system", content: "You are a helpful assistant that summarizes search results." },
-        { role: "user", content: `Search the web and summarize: ${query}` }
-      ],
-      max_tokens: 200,
+      tools: [{ type: "web_search" }],
+      input: query || "What movie won best piscture in 2025",
     });
 
     res.json({
-      heading: query,
-      content: response.choices[0].message.content
+      response,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Web search failed" });
+    res.status(500).json({ error: "Web search failed", details: error.message, });
   }
 };
 module.exports = { generateMeta, generateImage, webSearch };
