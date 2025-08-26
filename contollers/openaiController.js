@@ -1,4 +1,5 @@
 const openai = require("../config/openaiConfig");
+const fs = require("fs");
 
 const generateMeta = async (req, res) => {
   const { title } = req.body;
@@ -65,26 +66,35 @@ const webSearch = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Web search failed", details: error.message, });
+    res
+      .status(500)
+      .json({ error: "Web search failed", details: error.message });
   }
 };
 
-const fileSeacrh = async (req, res) => {
-    try {
-        const response = await openai.responses.create({
-            model="gpt-4.1",
-            input = "What is deep research by OpenAi?",
-            tools=[{
-                type: "file_search",
-                vector_store_ids: ["<vector_store_id"],
-                max_num_results: 2,
-            }],
-            include: ["file_search_call.results"],
-    })
+const fileSearch = async (req, res) => {
+  try {
+    const response = await openai.responses.create({
+      model: "gpt-4.1",
+      input: req.body.query || "What is deep research by OpenAI?",
+      tools: [
+        {
+          type: "file_search",
+          vector_store_ids: [process.env.VECTOR_STORE_ID],
+          filters: {
+            type: "eq",
+            key: "type",
+            value: "blog",
+          },
+        },
+      ],
+      include: ["file_search_call.results"],
+    });
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+};
 
-    console.log(response)
-    } catch (error) {
-        console.log(error)
-    }
-}
-module.exports = { generateMeta, generateImage, webSearch };
+module.exports = { generateMeta, generateImage, webSearch, fileSearch };
