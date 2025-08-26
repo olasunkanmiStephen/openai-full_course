@@ -68,4 +68,23 @@ const webSearch = async (req, res) => {
     res.status(500).json({ error: "Web search failed", details: error.message, });
   }
 };
+
+const fileSeacrh = async (req, res) => {
+    try {
+        const response = await openai.responses.create({
+            model="gpt-4.1",
+            input = "What is deep research by OpenAi?",
+            tools=[{
+                type: "file_search",
+                vector_store_ids: ["<vector_store_id"],
+                max_num_results: 2,
+            }],
+            include: ["file_search_call.results"],
+    })
+
+    console.log(response)
+    } catch (error) {
+        console.log(error)
+    }
+}
 module.exports = { generateMeta, generateImage, webSearch };
